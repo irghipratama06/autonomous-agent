@@ -119,7 +119,7 @@ function humanAmount(asset?: Asset) {
  * This replaces the root SDK parseTokenAmount import so the
  * browser bundle does not pull the Node-only `ws` dependency.
  */
-function parseTokenAmount(value: string, decimals: number): bigint {
+function parseTokenAmount(value: string, decimals: number): string {
   const normalized = value.trim();
 
   if (!normalized) {
@@ -140,8 +140,10 @@ function parseTokenAmount(value: string, decimals: number): bigint {
 
   const paddedFraction = fraction.padEnd(decimals, '0');
 
-  return BigInt(whole) * 10n ** BigInt(decimals) +
-    BigInt(paddedFraction || '0');
+  const combined = `${whole}${paddedFraction}`
+    .replace(/^0+(?=\d)/, '');
+
+  return combined || '0';
 }
 
 function errorText(error: unknown) {
