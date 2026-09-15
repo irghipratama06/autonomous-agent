@@ -445,22 +445,27 @@ export default function Home() {
       ).toString();
 
       const result = await client.intent('send', {
-        to: recipient.trim(),
-        amount: rawAmount,
-        coinId: coinId.toLowerCase(),
-        memo: `NEXUS restock • ${recommendation.sku}`,
-      });
+  to: recipient.trim(),
+  amount: rawAmount,
+  coinId: coinId.toLowerCase(),
+  memo: `NEXUS restock • ${recommendation.sku}`,
+});
 
-      addActivity(
-        `Payment submitted: ${result?.status ?? 'completed'}`
-      );
+const paymentResult = result as {
+  status?: string;
+  deliveryPending?: boolean;
+};
 
-      setToast({
-        kind: 'ok',
-        text: result?.deliveryPending
-          ? 'Payment committed; delivery is pending.'
-          : 'Payment approved and submitted.',
-      });
+addActivity(
+  `Payment submitted: ${paymentResult.status ?? 'completed'}`
+);
+
+setToast({
+  kind: 'ok',
+  text: paymentResult.deliveryPending
+    ? 'Payment committed; delivery is pending.'
+    : 'Payment approved and submitted.',
+});
 
       await refresh(client);
     } catch (error) {
